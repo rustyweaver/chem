@@ -34,16 +34,15 @@ smarts = "[c:100]1(c4c([c:200]5c6ccccc6[c:300]c7ccccc75)cccc4)c2ccccc2[c:400]c3c
 #
 # Attention: we will *label* certain atoms in the pattern so we can track
 # them down later and add bonds in this sample code. Two bonds are added, so
-# we need to label four atoms, which we call 100, 200, 300, 400.  The
-# labeling syntax is [c:X] where X is an arbitrary integer label.  Therefore
+# we need to label four atoms, which we call 100, 200, 300, 400. The
+# labeling syntax is [c:X] where X is an arbitrary integer label. Therefore
 # in the smarts string above the terms [c:100], [c:200], [c:300] and [c:400]
-# apper.
+# appear.
 #
 # In the bond-adding code (below) the atom indices are preserved. This is
 # done specifically for C-C bonds, by unbonding a hydrogen at each side of
 # the bond, and then moving those hydrogens to a distant location like (999,
 # 999, 999). But they are still part of the atom list.
-
 
 
 # Create a mapping from the matching label (eg. 100) to the corresponding
