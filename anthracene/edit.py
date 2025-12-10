@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Add aromatic bonds to fused rings preserving the atom indices.
+# Add bonds to aromatic fused rings preserving the atom indices.
 # will.rusch@gmail.com
 
 from rdkit import Chem
@@ -11,42 +11,39 @@ import numpy as np
 # The smiles string for bis(anthracenyl)benzene.
 smiles = "c1(c4c(c5c6ccccc6cc7ccccc75)cccc4)c2ccccc2cc3ccccc31"
 
-# From the smiles derive the smarts pattern
+# From the smiles derive the smarts pattern.
 smarts = "[c:100]1(c4c([c:200]5c6ccccc6[c:300]c7ccccc75)cccc4)c2ccccc2[c:400]c3ccccc31"
 
-# Notes:
+# Notes
+#
 # If you want to adapt this code to use a molecule that contains
 # bis(anthracenuyl)benzene plus some other subsituents, functional
 # groups, etc, you need to change 'c' in the pattern below with
-# 'c(your functional group)' and you probably also read the smiles
-# syntax documents, esp. regarding lower case c (aromatic) and upper
-# case C (explicit). We recommend just eliminating all hydrogens here
-# because they will be automatically added later.
+# 'c(your functional group)' and you might want to also read the
+# smiles syntax documentation, especially regarding lower case c
+# (aromatic) and upper case C (explicit). We recommend eliminating all
+# hydrogens in smiles/smarts strings because they will be
+# automatically added later.
 #
-# Create the smarts string. This is similar to smiles but it serves
-# a different purpose: pattern matching. It is just like smiles but adds some
+# Create the smarts string. Smarts is similar to smiles but it serves
+# a different purpose: pattern matching. Smarts is just like smiles but adds some
 # fancy syntax for matching some other molecules with the same core pattern.
 #
 # Attention: a 'c' in a smarts string matches carbon or carbon with H (C-H),
 # or carbon with any R group (C-R).
 #
 # Attention: we will *label* certain atoms in the pattern so we can track
-# then down later and add bonds. We will add bonds at four positions, but
-# to visualize that you really need to look at this article / image.
-# The labeling syntax is [c:XXX] where XXX is an arbitrary integer label that you
-# invent and later use to locate that atom in the specific molecule used.
+# them down later and add bonds in this sample code. Two bonds are added,
+# so we need to label four atoms, which we call 100, 200, 300, 400.
+# The labeling syntax is [c:X] where X is an arbitrary integer label.
+# Therefore in the smarts string above the terms [c:100], [c:200], [c:300]
+# and [c:400] apper.
 #
-# To the original molecule We add two bonds at positions 1 <-> 2 and 3 <-> 4.
-# We call this new create the 'excited conformer'.
-#
-# For explanation only, we mark the four bonding atoms in the smiles string
-# with a #.
-#
-#   "c#1(c4c(c#5c6#ccccc6c#c7ccccc75)cccc4)c2c#ccc2cc3ccccc31"
-#
-# In the smarts string, we actually need to use the syntax [c:101] to label
-# that specific carbon as 101 (for example). We thus substitute 'c' with '[c:101]'
-# again, for example.
+# In the bond-adding code (below) the atom indices are preserved. This is
+# done specifically for C-C bonds, by unbonding a hydrogen at each side
+# of the bond, and then moving those hydrogens to a distant location like
+# (999, 999, 999). But they are still part of the atom list.
+
 
 
 # Creates a mapping from the matching label (eg. 100) to the
@@ -64,7 +61,7 @@ def get_match_map(pattern, match):
 
 
 # Adds a bond between two carbons. It will also unbond an attached
-# hydrogen (if present) on each side of the bond.  In order to
+# hydrogen (if present) on each side of the bond. In order to
 # preserve the atom indices, the hydrogens are first unbonded, and
 # then removed to a far away location, but remain in molecule.
 
@@ -93,7 +90,7 @@ def connect_atoms_preserve_indices(molH, a, b, bond_type=Chem.rdchem.BondType.SI
 
     rw.AddBond(a, b, bond_type)
 
-    # move hydrogens away
+    # Move hydrogens away
     far = np.array([999.0,999.0,999.0])
     if h1 is not None:
         conf.SetAtomPosition(h1, far)
@@ -108,14 +105,16 @@ def connect_atoms_preserve_indices(molH, a, b, bond_type=Chem.rdchem.BondType.SI
     return mol_new
 
 
-def write_xyz(mol, filename):
+def write_xyz_file(mol, filename):
     xyz = Chem.MolToXYZBlock(mol)
+    print('Creating', filename)
     with open(filename, "w") as f:
         f.write(xyz)
 
 
-def write_mol(mol, filename):
+def write_mol_file(mol, filename):
     molblock = Chem.MolToMolBlock(mol, kekulize=False)
+    print('Creating', filename)
     with open(filename, "w") as f:
         f.write(molblock)
 
@@ -136,8 +135,8 @@ match_map = get_match_map(pattern, match)
 newmol = connect_atoms_preserve_indices(mol, match_map[100], match_map[200])
 newmol = connect_atoms_preserve_indices(newmol, match_map[300], match_map[400])
 
-write_xyz(mol, "mol.xyz")
-write_mol(mol, "mol.mol")
+write_xyz_file(mol, "mol.xyz")
+write_mol_file(mol, "mol.mol")
 
-write_xyz(newmol, "newmol.xyz")
-write_mol(newmol, "newmol.mol")
+write_xyz_file(newmol, "newmol.xyz")
+write_mol_file(newmol, "newmol.mol")
