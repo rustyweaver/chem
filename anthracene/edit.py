@@ -17,58 +17,57 @@ smarts = "[c:100]1(c4c([c:200]5c6ccccc6[c:300]c7ccccc75)cccc4)c2ccccc2[c:400]c3c
 # Notes
 #
 # If you want to adapt this code to use a molecule that contains
-# bis(anthracenuyl)benzene plus some other subsituents, functional
-# groups, etc, you need to change 'c' in the pattern below with
-# 'c(your functional group)' and you might want to also read the
-# smiles syntax documentation, especially regarding lower case c
-# (aromatic) and upper case C (explicit). We recommend eliminating all
-# hydrogens in smiles/smarts strings because they will be
-# automatically added later.
+# bis(anthracenuyl)benzene plus some other subsituents, functional groups,
+# etc, you need to change 'c' in the smiles string above with 'c(your
+# functional group)'. You might want to also read up on smiles syntax,
+# especially regarding lower case c (aromatic) and upper case C
+# (explicit). We recommend eliminating all hydrogens in smiles/smarts strings
+# because they will be automatically added later.
 #
-# Create the smarts string. Smarts is similar to smiles but it serves
-# a different purpose: pattern matching. Smarts is just like smiles but adds some
-# fancy syntax for matching some other molecules with the same core pattern.
+# Create the smarts string. Smarts is similar to smiles but it serves a
+# different purpose: pattern matching. Smarts is just like smiles but adds
+# some fancy syntax for matching some other molecules with the same core
+# pattern.
 #
 # Attention: a 'c' in a smarts string matches carbon or carbon with H (C-H),
 # or carbon with any R group (C-R).
 #
 # Attention: we will *label* certain atoms in the pattern so we can track
-# them down later and add bonds in this sample code. Two bonds are added,
-# so we need to label four atoms, which we call 100, 200, 300, 400.
-# The labeling syntax is [c:X] where X is an arbitrary integer label.
-# Therefore in the smarts string above the terms [c:100], [c:200], [c:300]
-# and [c:400] apper.
+# them down later and add bonds in this sample code. Two bonds are added, so
+# we need to label four atoms, which we call 100, 200, 300, 400.  The
+# labeling syntax is [c:X] where X is an arbitrary integer label.  Therefore
+# in the smarts string above the terms [c:100], [c:200], [c:300] and [c:400]
+# apper.
 #
 # In the bond-adding code (below) the atom indices are preserved. This is
-# done specifically for C-C bonds, by unbonding a hydrogen at each side
-# of the bond, and then moving those hydrogens to a distant location like
-# (999, 999, 999). But they are still part of the atom list.
+# done specifically for C-C bonds, by unbonding a hydrogen at each side of
+# the bond, and then moving those hydrogens to a distant location like (999,
+# 999, 999). But they are still part of the atom list.
 
 
 
-# Creates a mapping from the matching label (eg. 100) to the
-# corresponding atom in the smiles string.
+# Create a mapping from the matching label (eg. 100) to the corresponding
+# atom in the smiles string.
 
 def get_match_map(pattern, match):
   mapped = {}
   for atom in pattern.GetAtoms():
     amap = atom.GetAtomMapNum()
     if amap > 0:
-      # amap equals the custom index from the smarts
-      # pattern, eg. [X:1] then amap = 1.
+      # amap equals the custom index from the smarts pattern,
+      # eg. [X:1] then amap = 1.
       mapped[amap] = match[atom.GetIdx()]
   return mapped
 
 
-# Adds a bond between two carbons. It will also unbond an attached
-# hydrogen (if present) on each side of the bond. In order to
-# preserve the atom indices, the hydrogens are first unbonded, and
-# then removed to a far away location, but remain in molecule.
+# Adds a bond between two carbons. It will also unbond an attached hydrogen
+# (if present) on each side of the bond. In order to preserve the atom
+# indices, the hydrogens are first unbonded, and then removed to a far away
+# location, but remain in molecule.
 
 def connect_atoms_preserve_indices(molH, a, b, bond_type=Chem.rdchem.BondType.SINGLE):
     rw = Chem.RWMol(molH)
 
-    # copy conformer
     conf = molH.GetConformer()
     rw.RemoveAllConformers()
     rw.AddConformer(conf, assignId=True)
@@ -99,7 +98,7 @@ def connect_atoms_preserve_indices(molH, a, b, bond_type=Chem.rdchem.BondType.SI
 
     mol_new = rw.GetMol()
 
-    # do not sanitize fully (avoids kekulization)
+    # Do not sanitize fully (avoids kekulization)
     Chem.SanitizeMol(mol_new, sanitizeOps=Chem.SanitizeFlags.SANITIZE_ADJUSTHS)
 
     return mol_new
@@ -122,7 +121,7 @@ def write_mol_file(mol, filename):
 mol = Chem.MolFromSmiles(smiles)
 mol = Chem.AddHs(mol)
 
-#  generate 3d coords before connecting atoms
+# Generate 3d coordinates before connecting atoms
 AllChem.EmbedMolecule(mol, AllChem.ETKDG())
 AllChem.MMFFOptimizeMolecule(mol)
 
