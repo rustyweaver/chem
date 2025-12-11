@@ -1,0 +1,5 @@
+This folder contains a program that will generate two conformations
+of bis(anthracenyl)benzene, based on smiles strings with smarts pattern
+matching.
+
+See edit.py.
