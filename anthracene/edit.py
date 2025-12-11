@@ -14,7 +14,10 @@ smiles = "c1(c4c(c5c6ccccc6cc7ccccc75)cccc4)c2ccccc2cc3ccccc31"
 # From the smiles derive the smarts pattern.
 smarts = "[c:100]1(c4c([c:200]5c6ccccc6[c:300]c7ccccc75)cccc4)c2ccccc2[c:400]c3ccccc31"
 
-# Notes
+# Usage:
+#
+# Run this to generate both the .xyz for both conformers:
+# ./edit.py
 #
 # If you want to adapt this code to use a molecule that contains
 # bis(anthracenuyl)benzene plus some other subsituents, functional groups,
