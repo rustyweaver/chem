@@ -1,0 +1,23 @@
+#!/bin/bash
+# Create a .xyz from smiles, using xtb to form an initial geometry.
+# The geometry is written to stdout in xyz format.
+#
+# Usage:
+#   prep smiles-string [charge]
+
+set -e
+
+charge="0"
+test x"$1" = x && {
+  echo "Usage: prep <smiles>"
+  exit 1
+}
+test "$2" && {
+  charge="$2"
+}
+tmp=prep$$.xyz
+obabel "-:$1" -oxyz --gen3d -O $tmp 2>/dev/null
+rm xtbopt.xyz 2>/dev/null || true
+xtb -s $tmp --opt --chrg $charge > /dev/null 2>&1
+cat xtbopt.xyz
+rm xtbopt.xyz
