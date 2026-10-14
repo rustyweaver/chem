@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
+import csv
 import json
+import sys
 from filename import parse_filename
 from absorption import parse_absorption_spectrum
 from energy import parse_energy
@@ -31,10 +33,21 @@ def parse_angle_indices(val):
     pass
   raise argparse.ArgumentTypeError("Bond angle requires three positive integers separated by a comma (e.g. 1,2,3)")
 
+def flatten_record(record):
+  list_keys = [k for k, v in record.items() if isinstance(v, list) and v and isinstance(v[0], dict)]
+  if list_keys:
+    list_key = list_keys[0]
+    base_meta = {k: v for k, v in record.items() if k != list_key}
+    return [{**base_meta, **item} for item in record[list_key]]
+  return [record]
 
 def main():
   ap = argparse.ArgumentParser()
   ap.add_argument("files", nargs="+")
+  ap.add_argument("--format", choices=["json", "csv"], default="csv",
+                  help="output format (json or csv)")
+  ap.add_argument("--columns", type=lambda s: [c.strip() for c in s.split(",")],
+                  help="comma-separated list of columns to include")
   ap.add_argument("--absorption", action="store_true",
                   help="whether to capture the absorption spectrum")
   ap.add_argument("--energy", action="store_true",
@@ -72,13 +85,28 @@ def main():
   if args.bond_angle:
     tasks["bond_angle"] = lambda text: parse_bond_angle(text, *args.bond_angle)
 
+  writer = None
   for f in args.files:
     record = parse_filename(f)
     with open(f) as h:
       text = h.read()
     for task_name, parser in tasks.items():
       record[task_name] = parser(text)
-    print(json.dumps(record))
+
+    flat_rows = flatten_record(record)
+    if args.columns:
+      flat_rows = [{k: row[k] for k in args.columns if k in row} for row in flat_rows]
+
+    if args.format == "json":
+      for row in flat_rows:
+        print(json.dumps(row))
+    else:
+      if writer is None and flat_rows:
+        fieldnames = args.columns if args.columns else list(flat_rows[0].keys())
+        writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
+        writer.writeheader()
+      if writer and flat_rows:
+        writer.writerows(flat_rows)
 
 if __name__ == "__main__":
   main()
