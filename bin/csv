@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+# Extracts named columns from a csv file.
+# The first row is assumed to contain column headings.
+
+import sys
+import csv
+
+with open(sys.argv[1], mode='r') as f:
+  reader = csv.DictReader(f)
+  cols = sys.argv[2:]
+  print(','.join(cols))
+  for row in reader:
+    print(','.join(row.get(c, '') for c in cols))
