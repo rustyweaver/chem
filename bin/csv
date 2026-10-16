@@ -5,10 +5,19 @@
 
 import sys
 import csv
+import argparse
 
-with open(sys.argv[1], mode='r') as f:
+parser = argparse.ArgumentParser(description="Extracts named columns from a csv file.")
+parser.add_argument('--headings', nargs='?', const=True, default=True, type=lambda x: str(x).lower() == 'true', help="Print column headings")
+parser.add_argument('--noheadings', dest='headings', action='store_false', help="Do not print column headings")
+parser.add_argument('file', help="CSV file path")
+parser.add_argument('cols', nargs='+', help="Columns to extract")
+
+args = parser.parse_args()
+
+with open(args.file, mode='r') as f:
   reader = csv.DictReader(f)
-  cols = sys.argv[2:]
-  print(','.join(cols))
+  if args.headings:
+    print(','.join(args.cols))
   for row in reader:
-    print(','.join(row.get(c, '') for c in cols))
+    print(','.join(row.get(c, '') for c in args.cols))
