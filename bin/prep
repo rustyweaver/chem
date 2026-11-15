@@ -15,9 +15,11 @@ test x"$1" = x && {
 test "$2" && {
   charge="$2"
 }
-tmp=prep$$.xyz
-obabel "-:$1" -oxyz --gen3d -O $tmp 2>/dev/null
-rm xtbopt.xyz 2>/dev/null || true
-xtb -s $tmp --opt --chrg $charge > /dev/null 2>&1
-cat xtbopt.xyz
-rm xtbopt.xyz
+tmp=prep.$$
+mkdir $tmp
+(cd $tmp \
+  && obabel "-:$1" -h -oxyz -d --gen3d -O prep.xyz > obabel.out 2>&1 \
+  && xtb -s prep.xyz --opt --chrg $charge > xtb.out 2>&1 \
+  && cat xtbopt.xyz)
+# rm -rf $tmp
+
