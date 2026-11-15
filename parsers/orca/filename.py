@@ -23,11 +23,14 @@ ALIAS_MAP = {
   r"neb-dft-ts" : r"nebdftts",
   r"neb-dft-with-guess-ts" : r"nebdftwithguessts",
   r"def2-tzvp" : r"def2tzvp",
+  r"nbi-327" : r"nbi327",
+  r"nbi-526" : r"nbi526",
 }
 
 METHOD_MAP = {
   "hf": "HF",
   "cam": "CAM-B3LYP",
+  "b3lyp": "b3lyp",
   "camb3lyp": "CAM-B3LYP",
   "m062x": "M06-2X",
 }
@@ -70,6 +73,7 @@ MOLECULE_MAP = {
   "nebxtbts" : "neb-xtb-ts",
   "nebdftts" : "neb-dft-ts",
   "nebdftwithguessts" : "neb-dft-with-guess-ts",
+  "nbi-327" : "nbi-327",
 }
 
 def parse_filename(filename):

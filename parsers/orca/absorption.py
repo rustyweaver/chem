@@ -5,12 +5,9 @@ import re
 
 expr = (
   r"^----*\n"
-  r"TD-DFT/TDA-EXCITATION SPECTRA\n"
+  r"TD-DFT.*EXCITATION SPECTRA\n"
   r"----*\n"
-  r"\n"
-  r"[^\n]*\n"
-  r"[^\n]*\n"
-  r"\n"
+  r"(?:[^\n]*\n){4,5}"
   r"----*\n"
   r"\s*ABSORPTION SPECTRUM VIA TRANSITION ELECTRIC DIPOLE MOMENTS\s*\n"
   r"----*\n"
@@ -26,6 +23,7 @@ def parse_absorption_spectrum(text):
   """
   matches = re.findall(expr, text, flags=re.M|re.DOTALL)
   if not matches:
+    print('no absorption matches')
     result = []
   else:
     result = [

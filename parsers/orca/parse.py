@@ -4,7 +4,7 @@ import argparse
 import csv
 import json
 import sys
-from filename import parse_filename
+from filename2 import parse_filename
 from absorption import parse_absorption_spectrum
 from energy import parse_energy
 from thermo import parse_thermo
@@ -93,20 +93,22 @@ def main():
     for task_name, parser in tasks.items():
       record[task_name] = parser(text)
 
-    flat_rows = flatten_record(record)
     if args.columns:
-      flat_rows = [{k: row[k] for k in args.columns if k in row} for row in flat_rows]
+      flat_rows = flatten_record(record)
+      rows = [{k: row[k] for k in args.columns if k in row} for row in flat_rows]
+    else:
+      rows = [record]
 
     if args.format == "json":
-      for row in flat_rows:
+      for row in rows:
         print(json.dumps(row))
     else:
-      if writer is None and flat_rows:
-        fieldnames = args.columns if args.columns else list(flat_rows[0].keys())
+      if writer is None and rows:
+        fieldnames = args.columns if args.columns else list(rows[0].keys())
         writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
         writer.writeheader()
-      if writer and flat_rows:
-        writer.writerows(flat_rows)
+      if writer and rows:
+        writer.writerows(rows)
 
 if __name__ == "__main__":
   main()
