@@ -16,6 +16,10 @@ METHODS = [
   "xtb"
 ]
 
+BASIS_SETS = [
+  "def2-tzvpd",
+]
+
 SOLVENTS = [
   "dcm",
   "water",
@@ -39,6 +43,7 @@ def get_keyword(s, keywords):
 
 check_keywords(MOLECULES)
 check_keywords(METHODS)
+check_keywords(BASIS_SETS)
 check_keywords(SOLVENTS)
 
 def parse_filename(filename):
@@ -53,6 +58,7 @@ def parse_filename(filename):
     'molecule' : get_keyword(name, MOLECULES),
     'solvent' : get_keyword(name, SOLVENTS),
     'method' : get_keyword(name, METHODS),
+    'basis' : get_keyword(name, BASIS_SET),
   }
   return attributes
 
