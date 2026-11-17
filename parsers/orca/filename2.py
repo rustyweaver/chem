@@ -7,6 +7,12 @@ import sys
 MOLECULES = [
   "nbi-327",
   "nbi-526",
+  "daota",
+  "atota",
+  "tota",
+  "tata",
+  "adota",
+  "aadota",
 ]
 
 METHODS = [
