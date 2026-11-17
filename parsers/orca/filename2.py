@@ -58,7 +58,7 @@ def parse_filename(filename):
     'molecule' : get_keyword(name, MOLECULES),
     'solvent' : get_keyword(name, SOLVENTS),
     'method' : get_keyword(name, METHODS),
-    'basis' : get_keyword(name, BASIS_SET),
+    'basis' : get_keyword(name, BASIS_SETS),
   }
   return attributes
 
