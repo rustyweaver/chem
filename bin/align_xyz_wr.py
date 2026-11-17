@@ -255,6 +255,7 @@ def write_to_xyz(num_atoms, name, labels, coords):
 
    Writes the Cartesian coordinates to a file called 'name'
    """
+   print("Writing to: ", name)
    xyz = open(name, "w")
    xyz.write(str(num_atoms) + "\n")
    xyz.write(name + "\n")
@@ -335,6 +336,7 @@ If you find this script useful for any publishable work, please cite the corresp
 
    parser.add_argument('xyz1', metavar='A.xyz', type=str)
    parser.add_argument('xyz2', metavar='B.xyz', type=str)
+   parser.add_argument('outfile', metavar='C.xyz', type=str, nargs='?', default=None)
    parser.add_argument('-s', '--simple', action='store_true', help='Perform Kuhn-Munkres \
            assignment reordering without axes swaps and reflections; \
            the default is to perform axes swaps and reflections')
@@ -350,11 +352,11 @@ If you find this script useful for any publishable work, please cite the corresp
    b_init_labels = b_labels
    b_init_coords = b_coords
 
-   #Calculate the initial unsorted all-atom RMSD as a baseline
+   # Calculate the initial unsorted all-atom RMSD as a baseline
    A_all = np.array(a_coords)
    B_all = np.array(b_coords)
 
-   #If the two molecules are of the same size, get
+   # If the two molecules are of the same size, get
    if NA_a == NA_b:
       InitRMSD_unsorted = kabsch(A_all,B_all)
    else:
@@ -375,6 +377,7 @@ If you find this script useful for any publishable work, please cite the corresp
 
    #If ignoring hydrogens, the coordinates are written to a file with "noHydrogens.xyz" ending
    if args.noHydrogens:
+      print("Ignoring hydrogens")
       name = str(args.xyz1.split(".xyz")[0]) + "-noHydrogens" + ".xyz"
       write_to_xyz(NA_a, name, a_labels, a_coords)
       print("Coordinates of " + str(args.xyz1) + " without hydrogens is written to " + str(name))
@@ -548,26 +551,27 @@ If you find this script useful for any publishable work, please cite the corresp
       if not args.verbose:
          print("Please use the -v or --verbose options to see optimal reorderings")
       print("Initial unsorted RMSD: %2.3f" % float(InitRMSD_unsorted))
-      print("Initial   sorted RMSD: %2.3f" % float(InitRMSD_sorted))
-      print("Best             RMSD: %2.3f" % float(rmsds[0][0]))
+      print("Initial sorted RMSD: %2.3f" % float(InitRMSD_sorted))
+      print("Best RMSD: %2.3f" % float(rmsds[0][0]))
    else:
       print("The initial alignment is already optimal.")
       print("Initial and final RMSD: %2.3f" % float(InitRMSD_unsorted))
+      print("Best RMSD: %2.3f" % float(FinalRMSD))
 
-   if args.noHydrogens:
-      name = str(args.xyz2.split(".xyz")[0]) + "-aligned_to-" + \
-             str(args.xyz1.split(".xyz")[0]) + "-noHydrogens.xyz"
-   else:
-      name = str(args.xyz2.split(".xyz")[0]) + "-aligned_to-" + str(args.xyz1)
+   # if args.noHydrogens:
+   #    name = str(args.xyz2.split(".xyz")[0]) + "-aligned_to-" + \
+   #           str(args.xyz1.split(".xyz")[0]) + "-noHydrogens.xyz"
+   # else:
+   #    name = str(args.xyz2.split(".xyz")[0]) + "-aligned_to-" + str(args.xyz1)
+   
+   if args.outfile:
+     if FinalRMSD < float(InitRMSD_unsorted):
+        b_final_labels, b_final_coords = permute_all_atoms(b_labels, rmsds[0][3], order)
+     else:
+        b_final_labels = b_init_labels
+        b_final_coords = b_init_coords
+     write_to_xyz(num_atoms, args.outfile, b_final_labels, b_final_coords)
 
-   if FinalRMSD < float(InitRMSD_unsorted):
-      b_final_labels, b_final_coords = permute_all_atoms(b_labels, rmsds[0][3], order)
-   else:
-      b_final_labels = b_init_labels
-      b_final_coords = b_init_coords
-
-   write_to_xyz(num_atoms, name, b_final_labels, b_final_coords)
-   print("Best alignment written to " + str(name))
 
 if __name__ == "__main__":
    main()
