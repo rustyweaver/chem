@@ -23,7 +23,6 @@ def parse_absorption_spectrum(text):
   """
   matches = re.findall(expr, text, flags=re.M|re.DOTALL)
   if not matches:
-    print('no absorption matches')
     result = []
   else:
     result = [
