@@ -11,8 +11,8 @@ MOLECULES = [
   "atota",
   "tota",
   "tata",
-  "adota",
   "aadota",
+  "adota",
 ]
 
 METHODS = [
