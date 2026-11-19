@@ -167,7 +167,7 @@ if args.title:
 ax.set_xlim(args.min_wavelen, args.max_wavelen)
 ax.set_ylim(0.0, 1.05)
 ax.set_xlabel("Wavelength (nm)", fontsize=7)
-ax.set_ylabel("Normalized O.D. (au)", fontsize=7)
+ax.set_ylabel("Normalized Absorbance / Intensity (au)", fontsize=7)
 ax.legend(frameon=False, fontsize=7)
 ax.xaxis.set_minor_locator(MultipleLocator(10))
 
