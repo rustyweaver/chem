@@ -68,11 +68,8 @@ for infile in args.infile:
 
     for column in reader.fieldnames[1:]:
         values = parse_keywords(column)
-
-        # or more generally, do a merge
         values['source'] = source
         values['spectrum_type'] = spectrum_type
-
         if not keyword_match(values, filters):
             continue
 
@@ -101,7 +98,7 @@ if not source_max or any(value <= 0 for value in source_max.values()):
     sys.exit("No positive intensities for one or more sources")
 
 
-fig = plt.figure(figsize=(12, 4))
+fig = plt.figure(figsize=(10, 3))
 gs = fig.add_gridspec(1, 2, width_ratios=[1, 1])
 
 # fig = plt.figure(figsize=(9, 4))
@@ -157,20 +154,20 @@ if len(rows) > 0:
         colLabels=["Spectrum", "Peak 1 (nm)", "Peak 2 (nm)", "Δλ (nm)", "ΔE (eV)"],
         colWidths=[0.29, 0.13, 0.13, 0.13, 0.13],
         cellLoc="center",
-        loc="upper left"
+        loc="upper left",
     )
 
     table.auto_set_font_size(False)
-    table.set_fontsize(7)
+    table.set_fontsize(6)
     table.scale(1, 1.2)
 
 if args.title:
-    ax.set_title(reformat(args.title))
+    ax.set_title(reformat(args.title), fontsize=7)
 
 ax.set_xlim(args.min_wavelen, args.max_wavelen)
 ax.set_ylim(0.0, 1.05)
-ax.set_xlabel("Wavelength (nm)")
-ax.set_ylabel("Normalized O.D. (au)")
+ax.set_xlabel("Wavelength (nm)", fontsize=7)
+ax.set_ylabel("Normalized O.D. (au)", fontsize=7)
 ax.legend(frameon=False, fontsize=7)
 ax.xaxis.set_minor_locator(MultipleLocator(10))
 
