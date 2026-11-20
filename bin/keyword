@@ -1,0 +1,23 @@
+#!/bin/bash
+
+MOLECULES="nbi-327 nbi-526 htota atota tota daota tata aadota adota"
+METHODS="b3lyp"
+SOLVENTS="vacuum ch3cn water dcm"
+
+type="$1"
+query="$2"
+
+if [ "$type" = molecule ]; then
+  keywords="$MOLECULES"
+elif [ "$type" = method ]; then
+  keywords="$METHODS"
+elif [ "$type" = solvent ]; then
+  keywords="$SOLVENTS"
+fi
+
+for keyword in $keywords; do
+  if echo "$query" | grep $keyword >/dev/null; then
+    echo $keyword
+    break
+  fi
+done
