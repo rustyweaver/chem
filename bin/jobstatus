@@ -1,0 +1,55 @@
+#!/bin/bash
+
+COL=$HOME/bin/col
+
+check_orca() {
+  test -f "$outfile" && grep "ORCA TERMINATED NORMALLY" $outfile > /dev/null
+}
+
+job_info() {
+  sacct -j $1 --allocations --parsable2 \
+    --format=JobName,JobID,State,Start,End,Elapsed,Timelimit,Submit \
+    | grep -v '.*---' | tr '|' ' '
+}
+
+job_summary() {
+  read -r JobName JobID State StartTime EndTime ElapsedTime Timelimit SubmitTime TheRest < <(job_info "$1" | tail -1)
+  State="${State,,}"
+  if test "$State" = running; then
+    echo "running (job $JobID elapsed $ElapsedTime)"
+  else
+    echo "$state (job $JobID no successful termination message found in output)"
+  fi
+}
+
+ok=0
+running=0
+failed=0
+unstarted=0
+
+INPUTS=("$@")
+if (( ${#INPUTS[@]} == 0 )); then
+  INPUTS=(*.inp)
+fi
+
+if ls $INPUTS >/dev/null 2>&1 ; then
+  for inp in "${INPUTS[@]}"; do
+    prefix="${inp%.*}"
+    outfile="output/$prefix.out"
+    logfile="output/$prefix.log"
+    if check_orca "$outfile"; then
+      echo "$inp: ok"
+    elif ! test -f "$outfile"; then
+      echo "$inp: unstarted"
+    else
+      jobid=$(grep SLURM_JOB_ID $logfile | $COL 2)
+      summary=$(job_summary $jobid)
+      state=$(echo $summary | $COL 1)
+      if test "$state" = running; then
+        echo "$inp: running"
+      else
+        echo "$inp: failed"
+      fi
+    fi
+  done
+fi
