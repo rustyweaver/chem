@@ -14,6 +14,17 @@ MOLECULES = [
   "adota",
 ]
 
+CHARGES = [
+  "nbi-327" : 3,
+  "nbi-526" : 1,
+  "daota" : 1,
+  "atota" : 1,
+  "tota" : 1,
+  "tata" : 1,
+  "aadota" : 1,
+  "adota" : 1,
+]
+
 METHODS = [
   "hf",
   "cam-b3lyp-d4",
@@ -168,3 +179,9 @@ def get_solvent_of(soln, solvents):
     if match_string in soln:
       return solv
   assert False, 'Unable to determine solvent for "' + soln + '"' 
+
+# Find the molecule and then find the charge
+def get_charge(name):
+  keywords = parse_keywords(name)
+  molecule = keywords['molecule']
+  return CHARGES[molecule]
