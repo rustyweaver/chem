@@ -11,7 +11,11 @@ parser.add_argument("inputfile")
 parser.add_argument("outputfile")
 parser.add_argument("--charge", type=int, default=0)
 parser.add_argument("--show_atom_labels", action="store_true")
-parser.add_argument("--show_axes", action="store_true")
+parser.add_argument(
+  "--show_axes",
+  type=lambda s: {"true": True, "false": False}[s.lower()],
+  default=False,
+)
 parser.add_argument(
   "--tdm",
   type=lambda s: [float(x) for x in s.split(",")],
