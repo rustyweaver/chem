@@ -24,6 +24,8 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
+print("show_axes", args.show_axes)
+
 for entry in args.tdm:
   assert len(entry) == 4, "Each tdm argument must be four comma-separated floats"
 
