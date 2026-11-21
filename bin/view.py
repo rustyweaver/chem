@@ -14,7 +14,7 @@ parser.add_argument("--show_atom_labels", action="store_true")
 parser.add_argument(
   "--show_axes",
   type=lambda s: {"true": True, "false": False}[s.lower()],
-  default=False,
+  default=True,
 )
 parser.add_argument(
   "--tdm",
@@ -22,9 +22,7 @@ parser.add_argument(
   action="append",
   default=[],
 )
-
 args = parser.parse_args()
-print("show_axes", args.show_axes)
 
 for entry in args.tdm:
   assert len(entry) == 4, "Each tdm argument must be four comma-separated floats"
@@ -145,6 +143,6 @@ for i, entry in enumerate(args.tdm):
 
 view.zoomTo()
 
-print("Writing:", args.outputfile)
+print("Writing", args.outputfile)
 with open(args.outputfile, "w") as f:
   f.write(view._make_html())
