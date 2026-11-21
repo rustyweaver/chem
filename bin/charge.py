@@ -1,24 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-if [[ "$1" == *"nbi-327"* ]]; then
-  echo 3
-elif [[ "$1" == *"nbi-526"* ]]; then
-  echo 1
-elif [[ "$1" == *"htota"* ]]; then
-  echo 1
-elif [[ "$1" == *"daota"* ]]; then
-  echo 1
-elif [[ "$1" == *"tata"* ]]; then
-  echo 1
-elif [[ "$1" == *"adota"* ]]; then
-  echo 1
-elif [[ "$1" == *"aadota"* ]]; then
-  echo 1
-elif [[ "$1" == *"atota"* ]]; then
-  echo 1
-elif [[ "$1" == *"tota"* ]]; then
-  echo 1
-else
-  echo "BAD MOLECULE $1" >&2
-  exit 1
-fi
+import sys
+from spectrum_utils import get_charge
+
+def fatal(s):
+  print("ERROR: %s" % s, file=sys.stderr)
+  sys.exit(1)
+
+def main():
+  if len(sys.argv) < 2:
+    fatal("usage: charge.py <name>")
+  print(get_charge(sys.argv[1]))
+
+if __name__ == "__main__":
+  main()

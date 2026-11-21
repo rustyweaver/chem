@@ -14,7 +14,7 @@ MOLECULES = [
   "adota",
 ]
 
-CHARGES = [
+CHARGES = {
   "nbi-327" : 3,
   "nbi-526" : 1,
   "daota" : 1,
@@ -23,7 +23,7 @@ CHARGES = [
   "tata" : 1,
   "aadota" : 1,
   "adota" : 1,
-]
+}
 
 METHODS = [
   "hf",
