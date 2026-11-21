@@ -1,0 +1,61 @@
+#!/bin/bash
+
+COL=$HOME/bin/col
+
+check_orca() {
+  test -f "$outfile" && grep "ORCA TERMINATED NORMALLY" $outfile > /dev/null
+}
+
+job_info() {
+  sacct -j $1 --allocations --parsable2 \
+    --format=JobName,JobID,State,Start,End,Elapsed,Timelimit,Submit \
+    | grep -v '.*---' | tr '|' ' '
+}
+
+job_summary() {
+  read -r JobName JobID State StartTime EndTime ElapsedTime Timelimit SubmitTime TheRest < <(job_info "$1" | tail -1)
+  State="${State,,}"
+  if test "$State" = running; then
+    echo "running (job $JobID elapsed $ElapsedTime)"
+  else
+    echo "$state (job $JobID no successful termination message found in output)"
+  fi
+}
+
+ok=0
+running=0
+failed=0
+unstarted=0
+other=0
+total=0
+
+INPUTS=("$@")
+if (( ${#INPUTS[@]} == 0 )); then
+  INPUTS=(*.inp)
+fi
+
+if ls $INPUTS >/dev/null 2>&1 ; then
+  for inp in "${INPUTS[@]}"; do
+    ((total++))
+    status=$(jobstatus $inp | awk '{print $2}')
+    echo "$inp: $status"
+    if [ "$status" = "ok" ]; then
+      ((ok++))
+    elif [ "$status" = "unstarted" ]; then
+      ((unstarted++))
+    elif [ "$status" = "running" ]; then
+      ((running++))
+    elif [ "$status" = "failed" ]; then
+      ((failed++))
+    else
+      ((other++))
+    fi
+  done
+fi
+
+echo "$ok jobs completed successfully"
+echo "$running jobs running"
+echo "$failed jobs failed"
+echo "$unstarted not started or pending"
+echo "$other other / unexplained"
+echo "$total total jobs"

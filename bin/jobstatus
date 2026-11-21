@@ -53,3 +53,29 @@ if ls $INPUTS >/dev/null 2>&1 ; then
     fi
   done
 fi
+
+
+# Old code for gaussian
+
+# check_gaussian() {
+#   test -f "$outfile" && grep "Normal termination of Gaussian" $outfile > /dev/null
+# }
+
+# if ls *.com >/dev/null 2>&1 ; then
+#   for com in *.com; do
+#     ((total++))
+#     prefix="${com%.*}"
+#     outfile="output/$prefix.out"
+#     if check_gaussian "$outfile"; then
+#       echo "$com: ok"
+#       ((ok++))
+#     elif ! test -f "$outfile"; then
+#       echo "$com: not started or pending (output file missing)"
+#       echo "but try to figure out if submitted/pending"
+#       ((unstarted++))
+#     else
+#       echo "$com: output does not contain a normal termination message"
+#       ((failed++))
+#     fi
+#   done
+# fi
