@@ -1,0 +1,13 @@
+#!/bin/bash
+
+jobs=$($HOME/chem/bin/check "$@" | grep ok | sed 's@.inp: .*@@')
+
+width=0
+for job in $jobs; do
+  (( ${#job} > width )) && width=${#job}
+done
+
+for job in $jobs; do
+  t=$(awk '/Wall time/ {getline; print $3; exit}' < output/$job.log)
+  printf "%-*s: %s\n" "$width" "$job" "$t"
+done
