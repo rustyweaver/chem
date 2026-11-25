@@ -25,7 +25,6 @@ CHARGES = {
   "aadota" : 1,
   "adota" : 1,
   "htota" : 1,
->>>>>>> Stashed changes
 }
 
 METHODS = [
