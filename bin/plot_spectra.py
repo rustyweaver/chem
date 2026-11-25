@@ -74,7 +74,10 @@ for infile in args.infile:
             continue
 
         intensity = np.array([float(row[column]) if row[column] else np.nan for row in rows])
+        for lf in legend_fields:
+          print("field", lf, "values[field]", values[lf])
         label = " / ".join(get_display_name(values[field]) for field in legend_fields if values[field])
+        label = label.replace("Calculated / ", "")
 
         spectra.append((wl, intensity, label, source, spectrum_type))
 
@@ -105,19 +108,14 @@ gs = fig.add_gridspec(1, 2, width_ratios=[1, 1])
 # gs = fig.add_gridspec(1, 2, width_ratios=[2, 1])
 ax = fig.add_subplot(gs[0, 0])
 
-right = gs[0, 1].subgridspec(2, 1, height_ratios=[1, 1])
-ax_table = fig.add_subplot(right[0])
+ax_table = fig.add_subplot(gs[0, 1])
 ax_table.axis("off")
-
-ax_images = fig.add_subplot(right[1])
-ax_images.axis("off")
 
 rows = []
 
 for wl, intensity, label, source, spectrum_type in spectra:
     if label == "":
         label = "Other"
-
     normalized = intensity / source_max[(source, spectrum_type)]
     ax.plot(wl, normalized, label=get_display_name(label))
 
@@ -143,7 +141,9 @@ for wl, intensity, label, source, spectrum_type in spectra:
         rows.append([
             label,
             f"{w1:.1f}",
+            f"{e1:.1f}",
             f"{w2:.1f}",
+            f"{e2:.1f}",
             f"{w1-w2:.1f}",
             f"{e2-e1:.3f}"
         ])
@@ -151,14 +151,14 @@ for wl, intensity, label, source, spectrum_type in spectra:
 if len(rows) > 0:
     table = ax_table.table(
         cellText=rows,
-        colLabels=["Spectrum", "Peak 1 (nm)", "Peak 2 (nm)", "Δλ (nm)", "ΔE (eV)"],
-        colWidths=[0.29, 0.13, 0.13, 0.13, 0.13],
+        colLabels=["Spectrum", "Peak 1 (nm)", "Peak 1 (eV)", "Peak 2 (nm)", "Peak 2 (eF)", "ΔV (nm)", "ΔE (eV)"],
+        colWidths=[0.29, 0.13, 0.13, 0.13, 0.13, 0.13, 0.13],
         cellLoc="center",
         loc="upper left",
     )
 
     table.auto_set_font_size(False)
-    table.set_fontsize(6)
+    table.set_fontsize(5)
     table.scale(1, 1.2)
 
 if args.title:
@@ -166,29 +166,41 @@ if args.title:
 
 ax.set_xlim(args.min_wavelen, args.max_wavelen)
 ax.set_ylim(0.0, 1.05)
-ax.set_xlabel("Wavelength (nm)", fontsize=7)
-ax.set_ylabel("Normalized Absorbance / Intensity (au)", fontsize=7)
-ax.legend(frameon=False, fontsize=7)
+ax.set_xlabel("Wavelength (nm)", fontsize=6)
+ax.set_ylabel("Normalized Absorbance / Intensity (au)", fontsize=6)
+ax.legend(frameon=False, fontsize=6)
 ax.xaxis.set_minor_locator(MultipleLocator(10))
 
 fig.tight_layout()
+fig.canvas.draw()
 
-x = 0.0
+renderer = fig.canvas.get_renderer()
+
+if rows:
+    bbox = table.get_window_extent(renderer)
+    bbox = bbox.transformed(ax_table.transAxes.inverted())
+    x = bbox.x0
+    y = bbox.y0 - 0.03
+else:
+    x = 0.0
+    y = 1.0
 
 for filename in args.images:
     image = plt.imread(filename)
     zoom = 0.16
     artist = OffsetImage(image, zoom=zoom)
-    ax_images.add_artist(AnnotationBbox(
+
+    ax_table.add_artist(AnnotationBbox(
         artist,
-        (x, 0.5),
+        (x, y),
         xycoords="axes fraction",
-        box_alignment=(0, 0.5),
+        box_alignment=(0, 1),
         frameon=False,
+        annotation_clip=False,
         pad=0
     ))
 
-    x += image.shape[1] * zoom / (fig.dpi * ax_images.get_position().width * fig.get_figwidth())
+    x += artist.get_window_extent(renderer).width / ax_table.bbox.width
 
 print('Writing', args.outfile)
 

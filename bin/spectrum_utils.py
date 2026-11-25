@@ -8,6 +8,7 @@ MOLECULES = [
   "nbi-526",
   "daota",
   "atota",
+  "htota",
   "tota",
   "tata",
   "aadota",
@@ -23,17 +24,22 @@ CHARGES = {
   "tata" : 1,
   "aadota" : 1,
   "adota" : 1,
+  "htota" : 1,
+>>>>>>> Stashed changes
 }
 
 METHODS = [
   "hf",
-  "cam-b3lyp-d4",
+  "cam-b3lyp",
   "b3lyp",
-  "xtb"
+  "xtb",
+  "pbe0"
 ]
 
 BASIS_SETS = [
   "def2-tzvpd",
+  "631pgs",
+  "pbe0",
 ]
 
 SOLVENTS = [
@@ -86,8 +92,11 @@ DISPLAY_NAMES = {
   "dcm" : "DCM",
   "vacuum" : "Vacuum",
   "etoh" : "EtOH",
-  "b3lyp" : "CAM-B3LYP",
+  "b3lyp" : "B3LYP",
+  "cam-b3lyp" : "CAM-B3LYP",
+  "pbe0" : "PBE0",
   "def2-tzvpd" : "def2-TZVPD",
+  "631pgs" : "6-31+G*",
   "s1" : "Sample 1",
   "s2" : "Sample 2",
   "s3" : "Sample 3",
@@ -129,6 +138,8 @@ def reformat(s):
 
 # Returns the name to display.
 def get_display_name(keyword):
+  if keyword not in DISPLAY_NAMES:
+    print("No display mapping for \"%s\"" % keyword)
   display_name = DISPLAY_NAMES.get(keyword, keyword)
   return reformat(display_name)
 
@@ -183,5 +194,7 @@ def get_solvent_of(soln, solvents):
 # Find the molecule and then find the charge
 def get_charge(name):
   keywords = parse_keywords(name)
+  print('name', name, 'keywords', keywords)
   molecule = keywords['molecule']
+  assert molecule in CHARGES, "Cannot find charge for %s" % molecule
   return CHARGES[molecule]

@@ -28,6 +28,9 @@ for entry in args.tdm:
   assert len(entry) == 4, "Each tdm argument must be four comma-separated floats"
 
 mol = Chem.MolFromXYZFile(args.inputfile)
+assert mol, "Unable to parse mol from %s" % args.inputfile
+
+print('charge', args.charge, 'type(args.charge)', type(args.charge))
 rdDetermineBonds.DetermineBonds(mol, charge=args.charge)
 xyz_block = Chem.MolToXYZBlock(mol)
 view = py3Dmol.view(width=800, height=800)

@@ -17,13 +17,15 @@ MOLECULES = [
 
 METHODS = [
   "hf",
-  "cam-b3lyp-d4",
+  "cam-b3lyp",
   "b3lyp",
-  "xtb"
+  "xtb",
+  "pbe0",
 ]
 
 BASIS_SETS = [
   "def2-tzvpd",
+  "631pgs",
 ]
 
 SOLVENTS = [
